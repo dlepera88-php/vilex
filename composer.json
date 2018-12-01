@@ -1,0 +1,18 @@
+{
+  "name": "dlepera88-php/vilex",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authors": [
+    {"name": "Diego Lepera", "email": "dlepera88@gmail.com"}
+  ],
+  "require": {
+    "php": ">=7.1",
+    "zendframework/zend-diactoros": "^2.0",
+    "phpunit/phpunit": "7.3.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Vilex\\": "./src/Vilex"
+    }
+  }
+}
