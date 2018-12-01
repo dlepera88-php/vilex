@@ -10,6 +10,10 @@
     "zendframework/zend-diactoros": "^2.0",
     "phpunit/phpunit": "7.3.5"
   },
+  "suggest": {
+    "dlepera88-php/dlx": "Micro-framework que utiliza a arquitetura Hexagonal (em desenvolvimento)",
+    "dlepera88-php/painel-dlx": "Painel de administração"
+  },
   "autoload": {
     "psr-4": {
       "Vilex\\": "./src/Vilex"
