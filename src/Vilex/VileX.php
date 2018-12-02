@@ -98,7 +98,7 @@ class VileX
         $caminho_template = $this->getCaminhoCompletoTemplate($template);
 
         if (!file_exists($caminho_template)) {
-            throw new ViewNaoEncontradaException("O template {$caminho_template} não foi encontrado.");
+            throw new ViewNaoEncontradaException($caminho_template);
         }
 
         $this->templates[] = $caminho_template;
@@ -261,9 +261,12 @@ class VileX
     }
 
     /**
+     * Renderizar o conteúdo HTML
+     * @param null|string $arquivo_pagina_mestra
      * @return HtmlResponse
+     * @throws Exceptions\PaginaMestraNaoEncontradaException
      */
-    public function render()
+    public function render(?string $arquivo_pagina_mestra = null)
     {
         ob_start();
         foreach ($this->templates as $template) {
@@ -274,6 +277,11 @@ class VileX
 
         $html = ob_get_contents();
         ob_end_flush();
+
+        if (!empty($arquivo_pagina_mestra)) {
+            $pagina_mestra = new PaginaMestra($arquivo_pagina_mestra);
+            $html = (new MergePaginaMestraComConteudo($pagina_mestra))->merge($html);
+        }
 
         return new HtmlResponse($html);
     }

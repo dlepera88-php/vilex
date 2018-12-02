@@ -1,6 +1,6 @@
 {
   "name": "dlepera88-php/vilex",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "authors": [
     {"name": "Diego Lepera", "email": "dlepera88@gmail.com"}
@@ -8,7 +8,7 @@
   "require": {
     "php": ">=7.1",
     "zendframework/zend-diactoros": "^2.0",
-    "phpunit/phpunit": "7.3.5"
+    "phpunit/phpunit": "7.4.4"
   },
   "suggest": {
     "dlepera88-php/dlx": "Micro-framework que utiliza a arquitetura Hexagonal (em desenvolvimento)",
@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Vilex\\": "./src/Vilex"
+      "Vilex\\": "src/Vilex"
     }
   }
 }

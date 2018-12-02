@@ -26,10 +26,10 @@
 namespace Vilex\Exceptions;
 
 
-class ViewNaoEncontradaException extends \Exception
+class PaginaMestraNaoEncontradaException extends \Exception
 {
-    public function __construct(string $view)
+    public function __construct(string $pagina_mestra)
     {
-        parent::__construct("View {$view} não encontrada!", 404);
+        parent::__construct("Página mestra {$pagina_mestra} não encontrada.", 404);
     }
 }
