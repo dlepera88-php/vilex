@@ -46,7 +46,7 @@ class MergePaginaMestraComConteudo
         $areas_layout_conteudo = [];
 
         foreach ($this->pagina_mestra->getAreasLayout() as $area_layout) {
-            preg_match_all("~\[{$area_layout}\](.*)\[/{$area_layout}\]~", $conteudo, $conteudo_area);
+            preg_match_all("~(?s)\[{$area_layout}\](.*?)\[/{$area_layout}\]~", $conteudo, $conteudo_area);
             $areas_layout_conteudo[$area_layout] = $conteudo_area[1];
         }
 

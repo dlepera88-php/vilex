@@ -49,6 +49,13 @@ class MergePaginaMestraComConteudoTest extends TestCase
                 [CORPO]<div>Teste com mais de 1 bloco de CORPO</div>[/CORPO]
                 [CORPO]<div>Teste com mais de 1 bloco de CORPO</div>[/CORPO]
                 [RODAPE]Tel para contato: (61) 9 8350-0000[/RODAPE]
+            '],
+
+            ['
+                [CORPO]
+                    <form id="form-usuario" method="post" action="?task=usuarios/cadastrar-novo-usuario">
+                    </form>
+                [/CORPO]
             ']
         ];
     }
