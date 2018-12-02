@@ -43,6 +43,8 @@ class VileX
     ];
     /** @var string */
     private $contexto_atual;
+    /** @var string|null */
+    private $pagina_mestra;
 
     /**
      * @return string
@@ -261,12 +263,29 @@ class VileX
     }
 
     /**
+     * @return null|string
+     */
+    public function getPaginaMestra(): ?string
+    {
+        return $this->pagina_mestra;
+    }
+
+    /**
+     * @param null|string $pagina_mestra
+     * @return VileX
+     */
+    public function setPaginaMestra(?string $pagina_mestra): VileX
+    {
+        $this->pagina_mestra = $pagina_mestra;
+        return $this;
+    }
+
+    /**
      * Renderizar o conteúdo HTML
-     * @param null|string $arquivo_pagina_mestra
      * @return HtmlResponse
      * @throws Exceptions\PaginaMestraNaoEncontradaException
      */
-    public function render(?string $arquivo_pagina_mestra = null)
+    public function render(?string $arquivo_pagina_mestra = null): HtmlResponse
     {
         ob_start();
         foreach ($this->templates as $template) {
@@ -278,6 +297,7 @@ class VileX
         $html = ob_get_contents();
         ob_end_clean();
 
+        $arquivo_pagina_mestra = $arquivo_pagina_mestra ?? $this->getPaginaMestra();
         if (!empty($arquivo_pagina_mestra)) {
             $pagina_mestra = new PaginaMestra($arquivo_pagina_mestra);
             $html = (new MergePaginaMestraComConteudo($pagina_mestra))->merge($html);
