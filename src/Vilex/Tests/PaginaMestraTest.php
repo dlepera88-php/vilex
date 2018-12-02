@@ -35,12 +35,21 @@ class PaginaMestraTest extends TestCase
     const PAGINA_MESTRA_NAO_EXISTE = 'pagina_mestra_nao_existe.phtml';
     const PAGINA_MESTRA_EXEMPLO = '../../../exemplos/pagina_mestra.phtml';
 
-    public function test_existsPaginaMestra(): void
+    /**
+     * @throws PaginaMestraNaoEncontradaException
+     */
+    public function test_existsPaginaMestra_com_pagina_mestra_invalida(): void
     {
-        $pagina_mestra = new PaginaMestra(self::PAGINA_MESTRA_NAO_EXISTE);
-        $this->assertFalse($pagina_mestra->existsPaginaMestra());
+        $this->expectException(PaginaMestraNaoEncontradaException::class);
+        new PaginaMestra(self::PAGINA_MESTRA_NAO_EXISTE);
+    }
 
-        $pagina_mestra->setPaginaMestra(self::PAGINA_MESTRA_EXEMPLO);
+    /**
+     * @throws PaginaMestraNaoEncontradaException
+     */
+    public function test_existsPaginaMestra_com_pagina_mestra_exemplo()
+    {
+        $pagina_mestra = new PaginaMestra(self::PAGINA_MESTRA_EXEMPLO);
         $this->assertTrue($pagina_mestra->existsPaginaMestra());
     }
 
@@ -72,16 +81,5 @@ class PaginaMestraTest extends TestCase
         $this->assertContains('CABECALHO', $areas_layout);
         $this->assertContains('CORPO', $areas_layout);
         $this->assertContains('RODAPE', $areas_layout);
-    }
-
-    /**
-     * @throws PaginaMestraNaoEncontradaException
-     */
-    public function test_indentificaAreasLayout_com_pagina_mestra_invalida()
-    {
-        $pagina_mestra = new PaginaMestra(self::PAGINA_MESTRA_NAO_EXISTE);
-
-        $this->expectException(PaginaMestraNaoEncontradaException::class);
-        $pagina_mestra->identificarAreasLayout();
     }
 }
