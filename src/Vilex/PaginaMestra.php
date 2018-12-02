@@ -98,7 +98,7 @@ class PaginaMestra
         // return file_get_contents($this->pagina_mestra);
 
         ob_start();
-        include $this->pagina_mestra;
+        include $this->getPaginaMestra();
         $conteudo = ob_get_contents();
         ob_end_clean();
 
