@@ -276,7 +276,7 @@ class VileX
         }
 
         $html = ob_get_contents();
-        ob_end_flush();
+        ob_end_clean();
 
         if (!empty($arquivo_pagina_mestra)) {
             $pagina_mestra = new PaginaMestra($arquivo_pagina_mestra);
