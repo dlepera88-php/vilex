@@ -45,6 +45,10 @@ class VileX
     private $contexto_atual;
     /** @var string|null */
     private $pagina_mestra;
+    /** @var array */
+    private $arquivos_js = [];
+    /** @var array */
+    private $arquivos_css = [];
 
     /**
      * @return string
@@ -281,12 +285,91 @@ class VileX
     }
 
     /**
+     * Todos os arquivos JS
+     * @return array
+     */
+    public function getArquivosJs(): array
+    {
+        return $this->arquivos_js;
+    }
+
+    /**
+     * Adicionar um arquivo JS
+     * @param string $arquivo_js
+     * @return VileX
+     */
+    public function addArquivoJS(string $arquivo_js): VileX
+    {
+        $this->arquivos_js[] = $arquivo_js;
+        return $this;
+    }
+
+    /**
+     * Gerar tags HTML para incluir arquivos JS
+     * @return string
+     */
+    public function getTagsJs(): string
+    {
+        $html = '';
+
+        if (count($this->getArquivosJs()) > 0) {
+            $html .= "[ARQUIVOS-JAVASCRIPT]\n";
+            $html .= "\t<script src=\"" . implode("\">\n\t<script src=\"", $this->getArquivosJs()) . '">';
+            $html .= "\n[/ARQUIVOS-JAVASCRIPT]";
+        }
+
+        return $html;
+    }
+
+    /**
+     * Todos os arquivos CSS
+     * @return array
+     */
+    public function getArquivosCss(): array
+    {
+        return $this->arquivos_css;
+    }
+
+    /**
+     * Adicionar um arquivo CSS
+     * @param string $arquivo_css
+     * @return VileX
+     */
+    public function addArquivoCss(string $arquivo_css): VileX
+    {
+        $this->arquivos_css[] = $arquivo_css;
+        return $this;
+    }
+
+    /**
+     * Gerar tags HTML para incluir CSS
+     * @return string
+     */
+    public function getTagsCss(): string
+    {
+        $html = '';
+
+        if (count($this->getArquivosCss()) > 0) {
+            $html .= "[ARQUIVOS-CSS]\n";
+            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode($this->getArquivosCss()) . '">';
+            $html .= "\n[/ARQUIVOS-CSS]";
+        }
+
+        return $html;
+    }
+
+    /**
      * Renderizar o conteúdo HTML
      * @return HtmlResponse
      * @throws Exceptions\PaginaMestraNaoEncontradaException
      */
     public function render(?string $arquivo_pagina_mestra = null): HtmlResponse
     {
+        $html = '';
+        $html .= $this->getTagsCss();
+        $html .= $this->getTagsJs();
+
+
         ob_start();
         foreach ($this->templates as $template) {
             $this->setContextoByTemplate($template);
@@ -294,7 +377,7 @@ class VileX
             $this->unsetAtributosContexto($this->getContextoAtual());
         }
 
-        $html = ob_get_contents();
+        $html .= ob_get_contents();
         ob_end_clean();
 
         $arquivo_pagina_mestra = $arquivo_pagina_mestra ?? $this->getPaginaMestra();
