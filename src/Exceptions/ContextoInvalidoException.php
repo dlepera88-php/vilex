@@ -23,43 +23,20 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Tests;
+namespace Vilex\Exceptions;
 
 
-use PHPUnit\Framework\TestCase;
-use Vilex\Exceptions\ContextoInvalidoException;
-use Vilex\Exceptions\ViewNaoEncontradaException;
-use Vilex\VileX;
+use Throwable;
 
-class VilexTest extends TestCase
+class ContextoInvalidoException extends \Exception
 {
-    /** @var VileX */
-    private static $vilex;
-
-    public static function setUpBeforeClass()
-    {
-        parent::setUpBeforeClass();
-        self::$vilex = new VileX();
-    }
-
     /**
-     * @test
+     * ContextoInvalidoException constructor.
+     * @param string $contexto
+     * @param string $motivo
      */
-    public function getContextoByTemplate(): void
+    public function __construct(string $contexto, string $motivo)
     {
-        $contexto = self::$vilex->getContextoByTemplate('path/to/template.phtml');
-        $this->assertEquals('template', $contexto);
-    }
-
-    /**
-     * @test
-     * @throws \Exception
-     */
-    public function adicionarTemplateQueNaoExiste(): void
-    {
-        self::$vilex->setViewRoot('path/to/');
-
-        $this->expectException(ViewNaoEncontradaException::class);
-        self::$vilex->addTemplate('template');
+        parent::__construct("Contexto {$contexto} inválido! Motivo: {$motivo}.", 500);
     }
 }

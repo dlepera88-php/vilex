@@ -22,44 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+?>
 
-namespace Vilex\Tests;
-
-
-use PHPUnit\Framework\TestCase;
-use Vilex\Exceptions\ContextoInvalidoException;
-use Vilex\Exceptions\ViewNaoEncontradaException;
-use Vilex\VileX;
-
-class VilexTest extends TestCase
-{
-    /** @var VileX */
-    private static $vilex;
-
-    public static function setUpBeforeClass()
-    {
-        parent::setUpBeforeClass();
-        self::$vilex = new VileX();
-    }
-
-    /**
-     * @test
-     */
-    public function getContextoByTemplate(): void
-    {
-        $contexto = self::$vilex->getContextoByTemplate('path/to/template.phtml');
-        $this->assertEquals('template', $contexto);
-    }
-
-    /**
-     * @test
-     * @throws \Exception
-     */
-    public function adicionarTemplateQueNaoExiste(): void
-    {
-        self::$vilex->setViewRoot('path/to/');
-
-        $this->expectException(ViewNaoEncontradaException::class);
-        self::$vilex->addTemplate('template');
-    }
-}
+[CONTEUDO]
+<h1>Olá mundo!</h1>
+[/CONTEUDO]
