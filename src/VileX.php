@@ -330,7 +330,8 @@ class VileX
         /** @var Template $template */
         foreach ($this->templates as $template) {
             $this->setContextoByTemplate($template->getArquivo());
-            $template->render();
+            include $template->getArquivo();
+            // $template->render();
         }
 
         $html .= ob_get_contents();

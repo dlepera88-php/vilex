@@ -154,6 +154,10 @@ class Template
     /**
      * Renderizar o conteúdo do template
      * @return void
+     * @deprecated
+     * Quando esse método é usado, o contexto $this do template passa a ser
+     * a classe Template. Por enquanto, é necessário que o contexto $this seja a classe
+     * VileX
      */
     public function render(): void
     {
