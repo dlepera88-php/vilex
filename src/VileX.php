@@ -270,7 +270,7 @@ class VileX
 
         if (count($this->getArquivosJs()) > 0) {
             $html .= "[ARQUIVOS-JAVASCRIPT]\n";
-            $html .= "\t<script src=\"" . implode("\">\n\t<script src=\"", $this->getArquivosJs()) . '">';
+            $html .= "\t<script src=\"" . implode("\">\n\t<script src=\"", $this->getArquivosJs()) . '"></script>';
             $html .= "\n[/ARQUIVOS-JAVASCRIPT]";
         }
 
@@ -307,7 +307,7 @@ class VileX
 
         if (count($this->getArquivosCss()) > 0) {
             $html .= "[ARQUIVOS-CSS]\n";
-            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode($this->getArquivosCss()) . '"></link>';
+            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode($this->getArquivosCss()) . '">';
             $html .= "\n[/ARQUIVOS-CSS]";
         }
 
