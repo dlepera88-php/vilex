@@ -307,7 +307,7 @@ class VileX
 
         if (count($this->getArquivosCss()) > 0) {
             $html .= "[ARQUIVOS-CSS]\n";
-            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode($this->getArquivosCss()) . '">';
+            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode($this->getArquivosCss()) . '"></link>';
             $html .= "\n[/ARQUIVOS-CSS]";
         }
 
