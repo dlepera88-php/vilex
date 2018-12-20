@@ -270,7 +270,7 @@ class VileX
 
         if (count($this->getArquivosJs()) > 0) {
             $html .= "[ARQUIVOS-JAVASCRIPT]\n";
-            $html .= "\t<script src=\"" . implode("\">\n\t<script src=\"", $this->getArquivosJs()) . '"></script>';
+            $html .= "\t<script src=\"" . implode("\"></script>\n\t<script src=\"", $this->getArquivosJs()) . '"></script>';
             $html .= "\n[/ARQUIVOS-JAVASCRIPT]";
         }
 

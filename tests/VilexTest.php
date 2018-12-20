@@ -62,4 +62,15 @@ class VilexTest extends TestCase
         $this->expectException(ViewNaoEncontradaException::class);
         self::$vilex->addTemplate('template');
     }
+
+    public function test_getTagsJs()
+    {
+        self::$vilex->addArquivoJS('teste/arquivo1.js');
+        self::$vilex->addArquivoJS('teste/arquivo2.js');
+
+        $tags_js = self::$vilex->getTagsJs();
+
+        $this->assertContains('<script', $tags_js);
+        $this->assertContains('</script>', $tags_js);
+    }
 }
