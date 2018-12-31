@@ -18,7 +18,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Vilex\\": "src/Vilex"
+      "Vilex\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Vilex\\Tests\\": "tests/"
     }
   }
 }

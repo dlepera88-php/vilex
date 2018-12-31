@@ -33,7 +33,7 @@ use Vilex\PaginaMestra;
 class PaginaMestraTest extends TestCase
 {
     const PAGINA_MESTRA_NAO_EXISTE = 'pagina_mestra_nao_existe.phtml';
-    const PAGINA_MESTRA_EXEMPLO = '../../../exemplos/pagina_mestra.phtml';
+    const PAGINA_MESTRA_EXEMPLO = '../exemplos/pagina_mestra.phtml';
 
     /**
      * @throws PaginaMestraNaoEncontradaException
