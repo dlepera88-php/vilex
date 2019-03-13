@@ -27,6 +27,7 @@ namespace Vilex\Tests;
 
 
 use PHPUnit\Framework\TestCase;
+use Vilex\Exceptions\ContextoInvalidoException;
 use Vilex\Exceptions\ViewNaoEncontradaException;
 use Vilex\VileX;
 
@@ -52,16 +53,6 @@ class VilexTest extends TestCase
 
     /**
      * @test
-     */
-    public function getCaminhoCompletoTemplate(): void
-    {
-        self::$vilex->setViewRoot('path/to/');
-        $caminho = self::$vilex->getCaminhoCompletoTemplate('template');
-        $this->assertEquals('path/to/template.phtml', $caminho);
-    }
-
-    /**
-     * @test
      * @throws \Exception
      */
     public function adicionarTemplateQueNaoExiste(): void
@@ -70,5 +61,16 @@ class VilexTest extends TestCase
 
         $this->expectException(ViewNaoEncontradaException::class);
         self::$vilex->addTemplate('template');
+    }
+
+    public function test_getTagsJs()
+    {
+        self::$vilex->addArquivoJS('teste/arquivo1.js');
+        self::$vilex->addArquivoJS('teste/arquivo2.js');
+
+        $tags_js = self::$vilex->getTagsJs();
+
+        $this->assertContains('<script', $tags_js);
+        $this->assertContains('</script>', $tags_js);
     }
 }

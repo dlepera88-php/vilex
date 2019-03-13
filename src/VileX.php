@@ -26,6 +26,7 @@
 namespace Vilex;
 
 
+use Vilex\Exceptions\ContextoInvalidoException;
 use Vilex\Exceptions\ViewNaoEncontradaException;
 use Zend\Diactoros\Response\HtmlResponse;
 
@@ -33,18 +34,18 @@ class VileX
 {
     /** @var string */
     private $view_root = './';
-    /** @var string */
-    private $extensao_template = 'phtml';
     /** @var array */
     private $templates = [];
     /** @var array */
-    private $atributos = [
-        'global' => []
-    ];
+    private $atributos = [];
     /** @var string */
     private $contexto_atual;
     /** @var string|null */
     private $pagina_mestra;
+    /** @var array */
+    private $arquivos_js = [];
+    /** @var array */
+    private $arquivos_css = [];
 
     /**
      * @return string
@@ -65,24 +66,6 @@ class VileX
     }
 
     /**
-     * @return string
-     */
-    public function getExtensaoTemplate(): string
-    {
-        return $this->extensao_template;
-    }
-
-    /**
-     * @param string $extensao_template
-     * @return VileX
-     */
-    public function setExtensaoTemplate(string $extensao_template): VileX
-    {
-        $this->extensao_template = $extensao_template;
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function getTemplates(): array
@@ -91,25 +74,20 @@ class VileX
     }
 
     /**
-     * @param string $atributos
+     * @param string $arquivo
+     * @param array $atributos
      * @return VileX
-     * @throws \Exception
+     * @throws ViewNaoEncontradaException
      */
-    public function addTemplate(string $template, array $atributos = []): VileX
+    public function addTemplate(string $arquivo, array $atributos = []): VileX
     {
-        $caminho_template = $this->getCaminhoCompletoTemplate($template);
+        $template = new Template("{$this->view_root}{$arquivo}");
 
-        if (!file_exists($caminho_template)) {
-            throw new ViewNaoEncontradaException($caminho_template);
+        foreach ($atributos as $nome => $valor) {
+            $template->setAtributo($nome, $valor);
         }
 
-        $this->templates[] = $caminho_template;
-
-        if (count($atributos) > 0) {
-            $contexto = $this->getContextoByTemplate($caminho_template);
-            $this->setMultiAtributos($atributos, $contexto);
-        }
-
+        $this->templates[$arquivo] = $template;
         return $this;
     }
 
@@ -120,8 +98,7 @@ class VileX
      */
     public function excluirTemplate(string $template): VileX
     {
-        $caminho_template = $this->getCaminhoCompletoTemplate($template);
-        $key = array_search($caminho_template, $this->templates);
+        $key = array_search($template, $this->templates);
         unset($this->templates[$key]);
         return $this;
     }
@@ -129,26 +106,22 @@ class VileX
     /**
      * @param string $nome
      * @param $valor
+     * @param null|string $contexto
      * @return VileX
+     * @throws ContextoInvalidoException
      */
-    public function setAtributo(string $nome, $valor, string $contexto = 'global'): Vilex
+    public function setAtributo(string $nome, $valor, ?string $contexto = null): Vilex
     {
-        $this->atributos[$contexto][$nome] = $valor;
-        return $this;
-    }
+        if (is_null($contexto)) {
+            $this->atributos[$nome] = $valor;
+        } else {
+            if (!array_key_exists($contexto, $this->templates)) {
+                throw new ContextoInvalidoException($contexto, 'contexto não encontrado');
+            }
 
-    /**
-     * Setar vários parâmetros com base em um array
-     * @param array $params
-     * @param string $contexto
-     * @return VileX
-     */
-    public function setMultiAtributos(array $params, ?string $contexto = null): Vilex
-    {
-        $contexto = $contexto ?? $this->contexto_atual ?? 'global';
-
-        foreach ($params as $nome => $valor) {
-            $this->setAtributo($nome, $valor, $contexto);
+            /** @var Template $template */
+            $template = $this->templates[$contexto];
+            $template->setAtributo($nome, $valor);
         }
 
         return $this;
@@ -157,30 +130,25 @@ class VileX
     /**
      * Excluir um parâmetro.
      * @param string $nome
-     * @return bool
-     */
-    public function unsetAtributo(string $nome, ?string $contexto = null): bool
-    {
-        $contexto = $contexto ?? $this->contexto_atual ?? 'global';
-
-        if (!array_key_exists($contexto, $this->atributos) && !array_key_exists($nome, $this->atributos[$contexto])) {
-            return false;
-        }
-        unset($this->atributos[$contexto][$nome]);
-        return true;
-    }
-
-    /**
-     * Excluir todos os atributos de um determinado contexto.
      * @param null|string $contexto
-     * @return bool
+     * @return VileX
+     * @throws ContextoInvalidoException
      */
-    public function unsetAtributosContexto(?string $contexto = null): bool
+    public function unsetAtributo(string $nome, ?string $contexto = null): VileX
     {
-        $contexto = $contexto ?? $this->contexto_atual;
+        if (is_null($contexto)) {
+            unset($this->atributos[$nome]);
+        } else {
+            if (!array_key_exists($contexto, $this->templates)) {
+                throw new ContextoInvalidoException($contexto, 'contexto não encontrado');
+            }
 
-        unset($this->atributos[$contexto]);
-        return true;
+            /** @var Template $template */
+            $template = $this->templates[$contexto];
+            $template->unsetAtributo($nome);
+        }
+
+        return $this;
     }
 
     /**
@@ -206,10 +174,12 @@ class VileX
      */
     private function getAtributosAcessiveis(): ?array
     {
-        $atributos_acessiveis = $this->atributos['global'];
+        $atributos_acessiveis = $this->atributos;
 
-        if (array_key_exists($this->contexto_atual, $this->atributos)) {
-            $atributos_acessiveis = array_merge($atributos_acessiveis, $this->atributos[$this->contexto_atual]);
+        if (array_key_exists($this->contexto_atual, $this->templates)) {
+            /** @var Template $template */
+            $template = $this->templates[$this->contexto_atual];
+            $atributos_acessiveis = array_merge($atributos_acessiveis, $template->getAtributos());
         }
 
         return $atributos_acessiveis;
@@ -234,32 +204,22 @@ class VileX
 
     /**
      * Identificar o contexto de um template expecífico
-     * @param string $template
+     * @param string $arquivo
      * @return string
      */
-    public function getContextoByTemplate(string $template): string
+    public function getContextoByTemplate(string $arquivo): string
     {
-        $nome = basename($template);
+        $nome = basename($arquivo);
         return substr($nome, 0, strrpos($nome, '.'));
     }
 
     /**
      * Setar o contexto atual de acordo com o nome de um template
-     * @param string $template
+     * @param string $arquivo
      */
-    public function setContextoByTemplate(string $template)
+    public function setContextoByTemplate(string $arquivo)
     {
-        $this->setContextoAtual($this->getContextoByTemplate($template));
-    }
-
-    /**
-     * Montar o caminho completo do template.
-     * @param string $nome_template
-     * @return string
-     */
-    public function getCaminhoCompletoTemplate(string $nome_template): string
-    {
-        return "{$this->view_root}{$nome_template}.{$this->extensao_template}";
+        $this->setContextoAtual($this->getContextoByTemplate($arquivo));
     }
 
     /**
@@ -281,20 +241,100 @@ class VileX
     }
 
     /**
+     * Todos os arquivos JS
+     * @return array
+     */
+    public function getArquivosJs(): array
+    {
+        return $this->arquivos_js;
+    }
+
+    /**
+     * Adicionar um arquivo JS
+     * @param string $arquivo_js
+     * @return VileX
+     */
+    public function addArquivoJS(string $arquivo_js): VileX
+    {
+        $this->arquivos_js[] = $arquivo_js;
+        return $this;
+    }
+
+    /**
+     * Gerar tags HTML para incluir arquivos JS
+     * @return string
+     */
+    public function getTagsJs(): string
+    {
+        $html = '';
+
+        if (count($this->getArquivosJs()) > 0) {
+            $html .= "[ARQUIVOS-JAVASCRIPT]\n";
+            $html .= "\t<script src=\"" . implode("\"></script>\n\t<script src=\"", $this->getArquivosJs()) . '"></script>';
+            $html .= "\n[/ARQUIVOS-JAVASCRIPT]";
+        }
+
+        return $html;
+    }
+
+    /**
+     * Todos os arquivos CSS
+     * @return array
+     */
+    public function getArquivosCss(): array
+    {
+        return $this->arquivos_css;
+    }
+
+    /**
+     * Adicionar um arquivo CSS
+     * @param string $arquivo_css
+     * @return VileX
+     */
+    public function addArquivoCss(string $arquivo_css): VileX
+    {
+        $this->arquivos_css[] = $arquivo_css;
+        return $this;
+    }
+
+    /**
+     * Gerar tags HTML para incluir CSS
+     * @return string
+     */
+    public function getTagsCss(): string
+    {
+        $html = '';
+
+        if (count($this->getArquivosCss()) > 0) {
+            $html .= "[ARQUIVOS-CSS]\n";
+            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode($this->getArquivosCss()) . '">';
+            $html .= "\n[/ARQUIVOS-CSS]";
+        }
+
+        return $html;
+    }
+
+    /**
      * Renderizar o conteúdo HTML
      * @return HtmlResponse
      * @throws Exceptions\PaginaMestraNaoEncontradaException
      */
     public function render(?string $arquivo_pagina_mestra = null): HtmlResponse
     {
+        $html = '';
+        $html .= $this->getTagsCss();
+        $html .= $this->getTagsJs();
+
+
         ob_start();
+        /** @var Template $template */
         foreach ($this->templates as $template) {
-            $this->setContextoByTemplate($template);
-            include $template;
-            $this->unsetAtributosContexto($this->getContextoAtual());
+            $this->setContextoByTemplate($template->getArquivo());
+            include $template->getArquivo();
+            // $template->render();
         }
 
-        $html = ob_get_contents();
+        $html .= ob_get_contents();
         ob_end_clean();
 
         $arquivo_pagina_mestra = $arquivo_pagina_mestra ?? $this->getPaginaMestra();
