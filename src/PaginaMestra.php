@@ -78,7 +78,7 @@ class PaginaMestra
      */
     public function existsPaginaMestra(): bool
     {
-        return file_exists($this->pagina_mestra);
+        return stream_resolve_include_path($this->pagina_mestra) !== false;
     }
 
     /**
