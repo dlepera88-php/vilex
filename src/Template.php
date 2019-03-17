@@ -72,7 +72,7 @@ class Template
     {
         $caminho_template = $this->getCaminhoCompletoTemplate($arquivo);
 
-        if (!file_exists($caminho_template)) {
+        if (stream_resolve_include_path($caminho_template) === false) {
             throw new ViewNaoEncontradaException($caminho_template);
         }
 
