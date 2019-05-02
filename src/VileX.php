@@ -254,8 +254,12 @@ class VileX
      * @param string $arquivo_js
      * @return VileX
      */
-    public function addArquivoJS(string $arquivo_js): VileX
+    public function addArquivoJS(string $arquivo_js, bool $absoluto = false): VileX
     {
+        if ($absoluto && !preg_match('~^/~', $arquivo_js)) {
+            $arquivo_js = "/{$arquivo_js}";
+        }
+
         $this->arquivos_js[] = $arquivo_js;
         return $this;
     }
@@ -289,10 +293,15 @@ class VileX
     /**
      * Adicionar um arquivo CSS
      * @param string $arquivo_css
+     * @param bool $absoluto
      * @return VileX
      */
-    public function addArquivoCss(string $arquivo_css): VileX
+    public function addArquivoCss(string $arquivo_css, bool $absoluto = false): VileX
     {
+        if ($absoluto && !preg_match('~^/~', $arquivo_css)) {
+            $arquivo_css = "/{$arquivo_css}";
+        }
+
         $this->arquivos_css[] = $arquivo_css;
         return $this;
     }
