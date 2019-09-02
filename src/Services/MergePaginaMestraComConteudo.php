@@ -29,6 +29,11 @@ namespace Vilex\Services;
 use Vilex\Componentes\PaginaMestra;
 use Vilex\Exceptions;
 
+/**
+ * Class MergePaginaMestraComConteudo
+ * @package Vilex\Services
+ * @covers MergePaginaMestraComConteudoTest
+ */
 class MergePaginaMestraComConteudo
 {
     /** @var PaginaMestra */

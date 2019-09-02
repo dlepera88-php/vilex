@@ -32,6 +32,9 @@ use Vilex\Componentes\Template;
 
 class TemplateTest extends TestCase
 {
+    /**
+     * @return array
+     */
     public function providerAtributos(): array
     {
         return [
@@ -57,7 +60,7 @@ class TemplateTest extends TestCase
      */
     public function test_instanciar_Template_com_arquivo_valido()
     {
-        $template = new Template('../exemplos/template');
+        $template = new Template('exemplos/template');
 
         $this->assertInstanceOf(Template::class, $template);
     }
@@ -70,7 +73,7 @@ class TemplateTest extends TestCase
      */
     public function test_get_set_atributos($nome, $valor)
     {
-        $template = new Template('../exemplos/template');
+        $template = new Template('exemplos/template');
         $template->setAtributo($nome, $valor);
 
         $this->assertEquals($valor, $template->getAtributo($nome));
@@ -81,7 +84,7 @@ class TemplateTest extends TestCase
      */
     public function test_getAtributo_nao_existe()
     {
-        $template = new Template('../exemplos/template');
+        $template = new Template('exemplos/template');
         $this->assertNull($template->getAtributo('bla_bla'));
     }
 
@@ -90,7 +93,7 @@ class TemplateTest extends TestCase
      */
     public function test_unsetAtributo()
     {
-        $template = new Template('../exemplos/template');
+        $template = new Template('exemplos/template');
 
         $template->setAtributo('teste', 'teste');
         $this->assertEquals('teste', $template->getAtributo('teste'));

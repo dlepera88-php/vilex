@@ -30,6 +30,11 @@ use Vilex\Services\MergePaginaMestraComConteudo;
 use PHPUnit\Framework\TestCase;
 use Vilex\Componentes\PaginaMestra;
 
+/**
+ * Class MergePaginaMestraComConteudoTest
+ * @package Vilex\Tests
+ * @coversDefaultClass \Vilex\Services\MergePaginaMestraComConteudo
+ */
 class MergePaginaMestraComConteudoTest extends TestCase
 {
     /**
@@ -86,9 +91,8 @@ class MergePaginaMestraComConteudoTest extends TestCase
                         
                         <fieldset class="form-grupo">
                             <legend class="form-titulo">Grupos</legend>
-                        
-                                        <p class="sem-registros">Nenhum grupo de usuário encontrado.</p>
-                                </fieldset>
+                                <p class="sem-registros">Nenhum grupo de usuário encontrado.</p>
+                            </fieldset>
                         
                         <p class="form-botoes">
                             <button type="submit" class="btn btn-salvar">Salvar</button>
@@ -101,6 +105,7 @@ class MergePaginaMestraComConteudoTest extends TestCase
     }
 
     /**
+     * @param string $conteudo
      * @throws PaginaMestraNaoEncontradaException
      * @dataProvider providerConteudos
      */
