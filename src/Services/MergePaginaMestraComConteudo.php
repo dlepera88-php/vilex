@@ -23,14 +23,21 @@
  * SOFTWARE.
  */
 
-namespace Vilex;
+namespace Vilex\Services;
 
+
+use Vilex\Componentes\PaginaMestra;
+use Vilex\Exceptions;
 
 class MergePaginaMestraComConteudo
 {
     /** @var PaginaMestra */
     private $pagina_mestra;
 
+    /**
+     * MergePaginaMestraComConteudo constructor.
+     * @param PaginaMestra $pagina_mestra
+     */
     public function __construct(PaginaMestra $pagina_mestra)
     {
         $this->pagina_mestra = $pagina_mestra;

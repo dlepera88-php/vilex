@@ -28,7 +28,7 @@ namespace Vilex\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Vilex\Exceptions\ViewNaoEncontradaException;
-use Vilex\Template;
+use Vilex\Componentes\Template;
 
 class TemplateTest extends TestCase
 {

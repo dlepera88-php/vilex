@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-namespace Vilex;
+namespace Vilex\Componentes;
 
 
 use Vilex\Exceptions\PaginaMestraNaoEncontradaException;

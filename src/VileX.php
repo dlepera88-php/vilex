@@ -26,8 +26,11 @@
 namespace Vilex;
 
 
+use Vilex\Componentes\PaginaMestra;
+use Vilex\Componentes\Template;
 use Vilex\Exceptions\ContextoInvalidoException;
 use Vilex\Exceptions\ViewNaoEncontradaException;
+use Vilex\Services\MergePaginaMestraComConteudo;
 use Zend\Diactoros\Response\HtmlResponse;
 
 class VileX
@@ -46,6 +49,8 @@ class VileX
     private $arquivos_js = [];
     /** @var array */
     private $arquivos_css = [];
+    /** @var string|null */
+    private $versao;
 
     /**
      * @return string
@@ -154,7 +159,6 @@ class VileX
     /**
      * Obter o valor de um determinado parâmetro
      * @param string $nome
-     * @param null|string $contexto
      * @return null
      */
     public function getAtributo(string $nome)
@@ -169,7 +173,6 @@ class VileX
     /**
      * Filtrar todos os atributos para retornar apenas os atributos acessíveis em um determinado
      * contexto.
-     * @param string $contexto
      * @return array|null
      */
     private function getAtributosAcessiveis(): ?array
@@ -195,6 +198,7 @@ class VileX
 
     /**
      * @param string $contexto_atual
+     * @return VileX
      */
     public function setContextoAtual(string $contexto_atual): VileX
     {
@@ -241,6 +245,24 @@ class VileX
     }
 
     /**
+     * @return string|null
+     */
+    public function getVersao(): ?string
+    {
+        return $this->versao;
+    }
+
+    /**
+     * @param string|null $versao
+     * @return VileX
+     */
+    public function setVersao(?string $versao): VileX
+    {
+        $this->versao = $versao;
+        return $this;
+    }
+
+    /**
      * Todos os arquivos JS
      * @return array
      */
@@ -252,14 +274,16 @@ class VileX
     /**
      * Adicionar um arquivo JS
      * @param string $arquivo_js
-     * @param bool $absoluto
      * @param string|null $versao
+     * @param bool $absoluto
      * @return VileX
      */
-    public function addArquivoJS(string $arquivo_js, bool $absoluto = false, ?string $versao = null): VileX
+    public function addArquivoJS(string $arquivo_js, ?string $versao = null, bool $absoluto = true): VileX
     {
+        $versao = $versao ?? $this->getVersao();
+
         if ($absoluto && !preg_match('~^/~', $arquivo_js)) {
-            $arquivo_js = "/{$arquivo_js}";
+            $arquivo_js = stream_resolve_include_path($arquivo_js);
         }
 
         if (!is_null($versao)) {
@@ -299,14 +323,16 @@ class VileX
     /**
      * Adicionar um arquivo CSS
      * @param string $arquivo_css
-     * @param bool $absoluto
      * @param string|null $versao
+     * @param bool $absoluto
      * @return VileX
      */
-    public function addArquivoCss(string $arquivo_css, bool $absoluto = false, ?string $versao = null): VileX
+    public function addArquivoCss(string $arquivo_css, ?string $versao = null, bool $absoluto = true): VileX
     {
+        $versao = $versao ?? $this->getVersao();
+
         if ($absoluto && !preg_match('~^/~', $arquivo_css)) {
-            $arquivo_css = "/{$arquivo_css}";
+            $arquivo_css = stream_resolve_include_path($arquivo_css);
         }
 
         if (!is_null($versao)) {
@@ -336,6 +362,7 @@ class VileX
 
     /**
      * Renderizar o conteúdo HTML
+     * @param string|null $arquivo_pagina_mestra
      * @return HtmlResponse
      * @throws Exceptions\PaginaMestraNaoEncontradaException
      */

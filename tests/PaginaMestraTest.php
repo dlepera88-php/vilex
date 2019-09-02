@@ -28,7 +28,7 @@ namespace Vilex\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Vilex\Exceptions\PaginaMestraNaoEncontradaException;
-use Vilex\PaginaMestra;
+use Vilex\Componentes\PaginaMestra;
 
 class PaginaMestraTest extends TestCase
 {

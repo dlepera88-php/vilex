@@ -23,10 +23,11 @@
  * SOFTWARE.
  */
 
-namespace Vilex;
+namespace Vilex\Componentes;
 
 
 use Vilex\Exceptions\ViewNaoEncontradaException;
+use Vilex\VileX;
 
 class Template
 {
