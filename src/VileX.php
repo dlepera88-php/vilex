@@ -154,7 +154,6 @@ class VileX
     /**
      * Obter o valor de um determinado parâmetro
      * @param string $nome
-     * @param null|string $contexto
      * @return null
      */
     public function getAtributo(string $nome)
@@ -169,7 +168,6 @@ class VileX
     /**
      * Filtrar todos os atributos para retornar apenas os atributos acessíveis em um determinado
      * contexto.
-     * @param string $contexto
      * @return array|null
      */
     private function getAtributosAcessiveis(): ?array
@@ -195,6 +193,7 @@ class VileX
 
     /**
      * @param string $contexto_atual
+     * @return VileX
      */
     public function setContextoAtual(string $contexto_atual): VileX
     {
@@ -258,6 +257,8 @@ class VileX
      */
     public function addArquivoJS(string $arquivo_js, bool $absoluto = false, ?string $versao = null): VileX
     {
+        $arquivo_js = $this->findCaminhoCompleto($arquivo_js);
+
         if ($absoluto && !preg_match('~^/~', $arquivo_js)) {
             $arquivo_js = "/{$arquivo_js}";
         }
@@ -305,6 +306,8 @@ class VileX
      */
     public function addArquivoCss(string $arquivo_css, bool $absoluto = false, ?string $versao = null): VileX
     {
+        $arquivo_css = $this->findCaminhoCompleto($arquivo_css);
+
         if ($absoluto && !preg_match('~^/~', $arquivo_css)) {
             $arquivo_css = "/{$arquivo_css}";
         }
@@ -336,6 +339,7 @@ class VileX
 
     /**
      * Renderizar o conteúdo HTML
+     * @param string|null $arquivo_pagina_mestra
      * @return HtmlResponse
      * @throws Exceptions\PaginaMestraNaoEncontradaException
      */
@@ -364,5 +368,25 @@ class VileX
         }
 
         return new HtmlResponse($html);
+    }
+
+    /**
+     * @param string $arquivo
+     * @return string
+     */
+    private function findCaminhoCompleto(string $arquivo): string
+    {
+        $arquivo_original = $arquivo;
+        $include_paths = explode(PATH_SEPARATOR, get_include_path());
+        $quantidade_paths = count($include_paths);
+        $i = 0;
+
+        while (!file_exists($arquivo) && $i < $quantidade_paths) {
+            $path = $include_paths[$i];
+            $arquivo = "{$path}/{$arquivo_original}";
+            $i++;
+        }
+
+        return $arquivo;
     }
 }
