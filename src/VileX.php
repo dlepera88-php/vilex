@@ -382,7 +382,7 @@ class VileX
         $i = 0;
 
         while (!file_exists($arquivo) && $i < $quantidade_paths) {
-            $path = $include_paths[$i];
+            $path = preg_replace('~/$~',  '', $include_paths[$i]);
             $arquivo = "{$path}/{$arquivo_original}";
             $i++;
         }

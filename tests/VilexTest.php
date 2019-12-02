@@ -31,6 +31,11 @@ use Vilex\Exceptions\ContextoInvalidoException;
 use Vilex\Exceptions\ViewNaoEncontradaException;
 use Vilex\VileX;
 
+/**
+ * Class VilexTest
+ * @package Vilex\Tests
+ * @coversDefaultClass \Vilex\VileX
+ */
 class VilexTest extends TestCase
 {
     /** @var VileX */
@@ -72,5 +77,23 @@ class VilexTest extends TestCase
 
         $this->assertContains('<script', $tags_js);
         $this->assertContains('</script>', $tags_js);
+    }
+
+    /**
+     * @covers ::addArquivoJS
+     */
+    public function test_AddArquivoJS()
+    {
+        $include_path = get_include_path();
+        $novo_include_path = '../../../painel-dlx/reservas-dlx/:teste/';
+        set_include_path($include_path . PATH_SEPARATOR . $novo_include_path);
+
+//        $arquivo_css = 'public/js/apart-hotel-min.js';
+        $arquivo_css = '/vendor/autoload.php';
+        self::$vilex->addArquivoJS($arquivo_css);
+
+        set_include_path($include_path);
+
+        $this->assertTrue(true);
     }
 }
