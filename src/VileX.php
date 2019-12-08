@@ -376,7 +376,7 @@ class VileX
      */
     private function findCaminhoCompleto(string $arquivo): string
     {
-        $arquivo_original = $arquivo;
+        $arquivo_original = trim($arquivo, '/');
         $include_paths = explode(PATH_SEPARATOR, get_include_path());
         $quantidade_paths = count($include_paths);
         $i = 0;
