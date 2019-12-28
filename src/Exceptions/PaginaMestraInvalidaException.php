@@ -25,11 +25,16 @@
 
 namespace Vilex\Exceptions;
 
+use Exception;
 
-class PaginaMestraNaoEncontradaException extends \Exception
+class PaginaMestraInvalidaException extends Exception
 {
-    public function __construct(string $pagina_mestra)
+    /**
+     * @param string $nome_arquivo
+     * @return static
+     */
+    public static function naoEncontrada(string $nome_arquivo): self
     {
-        parent::__construct("Página mestra {$pagina_mestra} não encontrada.", 404);
+        return new self("Página mestra {$nome_arquivo} não encontrada!", 10);
     }
 }

@@ -1,29 +1,32 @@
 {
-  "name": "dlepera88-php/vilex",
-  "version": "1.2.7",
-  "license": "MIT",
-  "authors": [
-    {"name": "Diego Lepera", "email": "dlepera88@gmail.com"}
-  ],
-  "require": {
-    "php": ">=7.1",
-    "zendframework/zend-diactoros": "2.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^7.5"
-  },
-  "suggest": {
-    "dlepera88-php/dlx": "Micro-framework que utiliza a arquitetura Hexagonal (em desenvolvimento)",
-    "dlepera88-php/painel-dlx": "Painel de administração"
-  },
-  "autoload": {
-    "psr-4": {
-      "Vilex\\": "src/"
+    "name": "dlepera88-php/vilex",
+    "version": "2.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Diego Lepera",
+            "email": "dlepera88@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "zendframework/zend-diactoros": "2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "suggest": {
+        "dlepera88-php/dlx": "Micro-framework que utiliza a arquitetura Hexagonal (em desenvolvimento)",
+        "dlepera88-php/painel-dlx": "Painel de administração"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vilex\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vilex\\Tests\\": "tests/"
+        }
     }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Vilex\\Tests\\": "tests/"
-    }
-  }
 }

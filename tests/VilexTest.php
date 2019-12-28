@@ -28,6 +28,7 @@ namespace Vilex\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Vilex\Exceptions\ContextoInvalidoException;
+use Vilex\Exceptions\TemplateInvalidoException;
 use Vilex\Exceptions\ViewNaoEncontradaException;
 use Vilex\VileX;
 
@@ -52,6 +53,7 @@ class VilexTest extends TestCase
      */
     public function getContextoByTemplate(): void
     {
+        $this->markTestSkipped('O método Vilex::getContextoByTemplate está depreciado.');
         $contexto = self::$vilex->getContextoByTemplate('path/to/template.phtml');
         $this->assertEquals('template', $contexto);
     }
@@ -64,19 +66,25 @@ class VilexTest extends TestCase
     {
         self::$vilex->setViewRoot('path/to/');
 
-        $this->expectException(ViewNaoEncontradaException::class);
+        $this->expectException(TemplateInvalidoException::class);
+        $this->expectExceptionCode(10);
         self::$vilex->addTemplate('template');
     }
 
+    /**
+     * @covers ::getTagsJs
+     */
     public function test_getTagsJs()
     {
-        self::$vilex->addArquivoJS('teste/arquivo1.js');
-        self::$vilex->addArquivoJS('teste/arquivo2.js');
+        self::$vilex->addArquivoJS('Recursos/arquivos/arquivo1.js');
+        self::$vilex->addArquivoJS('Recursos/arquivos/arquivo2.js');
 
         $tags_js = self::$vilex->getTagsJs();
 
         $this->assertContains('<script', $tags_js);
         $this->assertContains('</script>', $tags_js);
+        $this->assertContains('[ARQUIVOS-JAVASCRIPT]', $tags_js);
+        $this->assertContains('[/ARQUIVOS-JAVASCRIPT]', $tags_js);
     }
 
     /**
@@ -88,7 +96,6 @@ class VilexTest extends TestCase
         $novo_include_path = '../../../painel-dlx/reservas-dlx/:teste/';
         set_include_path($include_path . PATH_SEPARATOR . $novo_include_path);
 
-//        $arquivo_css = 'public/js/apart-hotel-min.js';
         $arquivo_css = '/vendor/autoload.php';
         self::$vilex->addArquivoJS($arquivo_css);
 

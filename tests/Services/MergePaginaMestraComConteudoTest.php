@@ -23,11 +23,13 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Tests;
+namespace Vilex\Tests\Services;
 
-use Vilex\MergePaginaMestraComConteudo;
+use Vilex\Exceptions\PaginaMestraInvalidaException;
+use Vilex\Services\MergePaginaMestraComConteudo;
 use PHPUnit\Framework\TestCase;
-use Vilex\PaginaMestra;
+use Vilex\Templates\PaginaMestra;
+use Vilex\Tests\Templates\PaginaMestraTest;
 
 class MergePaginaMestraComConteudoTest extends TestCase
 {
@@ -100,12 +102,13 @@ class MergePaginaMestraComConteudoTest extends TestCase
     }
 
     /**
-     * @throws \Vilex\Exceptions\PaginaMestraNaoEncontradaException
+     * @param string $conteudo
+     * @throws PaginaMestraInvalidaException
      * @dataProvider providerConteudos
      */
     public function test_extrairAreasLayoutConteudo_com_pagina_mestra_exemplo(string $conteudo)
     {
-        $pagina_mestra = new PaginaMestra(PaginaMestraTest::PAGINA_MESTRA_EXEMPLO);
+        $pagina_mestra = new PaginaMestra('../Templates/' . PaginaMestraTest::PAGINA_MESTRA_EXEMPLO);
         $areas_layout = $pagina_mestra->getAreasLayout();
 
         $areas_layout_conteudo = (new MergePaginaMestraComConteudo($pagina_mestra))

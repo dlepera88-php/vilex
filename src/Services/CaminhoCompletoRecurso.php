@@ -23,13 +23,30 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Exceptions;
+namespace Vilex\Services;
 
-
-class ViewNaoEncontradaException extends \Exception
+/**
+ * Class CaminhoCompletoRecurso
+ * @package Vilex\Services
+ * @covers CaminhoCompletoRecursoTest
+ */
+class CaminhoCompletoRecurso
 {
-    public function __construct(string $view)
+    /**
+     * Encontrar o caminho completo de um determinado recurso.
+     * Utiliza o 'include_path'
+     * @param string $arquivo
+     * @param string $base
+     * @return string
+     */
+    public function execute(string $arquivo, string $base = ''): string
     {
-        parent::__construct("View {$view} não encontrada!", 404);
+        $caminho_absoluto = stream_resolve_include_path($arquivo);
+
+        if (!$caminho_absoluto) {
+            return $arquivo;
+        }
+
+        return preg_replace("~^{$base}~", '', $caminho_absoluto);
     }
 }
