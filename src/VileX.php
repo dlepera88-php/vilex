@@ -25,9 +25,6 @@
 
 namespace Vilex;
 
-
-use Vilex\Exceptions\ContextoInvalidoException;
-
 use Vilex\Exceptions\PaginaMestraInvalidaException;
 use Vilex\Exceptions\TemplateInvalidoException;
 use Vilex\Recursos\Javascript;
@@ -45,73 +42,68 @@ use Zend\Diactoros\Response\HtmlResponse;
  */
 class VileX
 {
-    const EXTENSAO_TEMPLATE = 'phtml';
-
-    /** @var string */
-    private $view_root = './';
-    /** @var string */
-    private $base_html = '';
-    /** @var array */
-    private $templates = [];
-    /** @var array */
-    private $atributos = [];
+    /** @var VileXConfiguracao */
+    private $configuracao;
     /** @var string|null */
     private $pagina_mestra;
+    /** @var array */
+    private $templates = [];
     /** @var array */
     private $arquivos_js = [];
     /** @var array */
     private $arquivos_css = [];
+    /** @var array */
+    private $atributos = [];
     /** @var CaminhoCompletoRecurso */
     private $caminho_completo_recurso;
 
     /**
      * VileX constructor.
+     * @param VileXConfiguracao|null $configuracao
      */
-    public function __construct()
+    public function __construct(?VileXConfiguracao $configuracao = null)
     {
+        $this->configuracao = $configuracao ?? new VileXConfiguracao();
         $this->caminho_completo_recurso = new CaminhoCompletoRecurso();
     }
 
     /**
      * @return string
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
      */
     public function getViewRoot(): string
     {
-        return $this->view_root;
+        return $this->configuracao->getRoot();
     }
 
     /**
      * @param string $view_root
      * @return VileX
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
      */
     public function setViewRoot(string $view_root): VileX
     {
-        $this->view_root = trim($view_root, '/') . '/';
-
-        $include_path = get_include_path();
-
-        if (strpos($include_path, $this->view_root) === false) {
-            set_include_path($this->view_root . PATH_SEPARATOR . $include_path);
-        }
-
+        $this->configuracao->setRoot($view_root);
         return $this;
     }
 
     /**
      * @return string
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
      */
     public function getBaseHtml(): string
     {
-        return $this->base_html;
+        return $this->configuracao->getBaseHtml();
     }
 
     /**
      * @param string|null $base_html
      * @return VileX
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
      */
     public function setBaseHtml(?string $base_html): VileX
     {
-        $this->base_html = $base_html;
+        $this->configuracao->setBaseHtml($base_html);
         return $this;
     }
 
@@ -131,8 +123,8 @@ class VileX
      */
     public function addTemplate(string $arquivo, array $atributos = []): VileX
     {
-        $arquivo_com_extensao = "{$arquivo}." . self::EXTENSAO_TEMPLATE;
-        $template = new Template($arquivo_com_extensao, $atributos);
+        $nome_arquivo_completo = "{$this->configuracao->getRoot()}{$arquivo}.{$this->configuracao->getExtensaoTemplate()}";
+        $template = new Template($nome_arquivo_completo, $atributos);
         $this->templates[$arquivo] = $template;
         return $this;
     }
@@ -155,7 +147,6 @@ class VileX
      * @param $valor
      * @param null|string $contexto
      * @return VileX
-     * @deprecated
      */
     public function setAtributo(string $nome, $valor, ?string $contexto = null): Vilex
     {
@@ -167,7 +158,7 @@ class VileX
      * Obter o valor de um determinado parâmetro
      * @param string $nome
      * @return null
-     * @deprecated
+     * @deprecated Essa responsabilidade será passada para o Template/Página Mestra
      */
     public function getAtributo(string $nome)
     {
