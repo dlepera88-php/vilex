@@ -225,7 +225,7 @@ class VileX
      */
     public function getPaginaMestra(): ?string
     {
-        return $this->pagina_mestra;
+        return "{$this->configuracao->getRoot()}{$this->pagina_mestra}";
     }
 
     /**
