@@ -45,6 +45,8 @@ use Zend\Diactoros\Response\HtmlResponse;
  */
 class VileX
 {
+    const EXTENSAO_TEMPLATE = 'phtml';
+
     /** @var string */
     private $view_root = './';
     /** @var string */
@@ -129,7 +131,8 @@ class VileX
      */
     public function addTemplate(string $arquivo, array $atributos = []): VileX
     {
-        $template = new Template($arquivo, $atributos);
+        $arquivo_com_extensao = "{$arquivo}." . self::EXTENSAO_TEMPLATE;
+        $template = new Template($arquivo_com_extensao, $atributos);
         $this->templates[$arquivo] = $template;
         return $this;
     }
@@ -183,24 +186,16 @@ class VileX
      */
     private function getAtributosAcessiveis(): ?array
     {
-        $atributos_acessiveis = $this->atributos;
-
-        if (array_key_exists($this->contexto_atual, $this->templates)) {
-            /** @var Template $template */
-            $template = $this->templates[$this->contexto_atual];
-            $atributos_acessiveis = array_merge($atributos_acessiveis, $template->getAtributos());
-        }
-
-        return $atributos_acessiveis;
+        return null;
     }
 
     /**
      * @return string
      * @deprecated
      */
-    public function getContextoAtual(): string
+    public function getContextoAtual(): ?string
     {
-        return $this->contexto_atual;
+        return null;
     }
 
     /**
@@ -210,7 +205,6 @@ class VileX
      */
     public function setContextoAtual(string $contexto_atual): VileX
     {
-        $this->contexto_atual = $contexto_atual;
         return $this;
     }
 
@@ -222,8 +216,7 @@ class VileX
      */
     public function getContextoByTemplate(string $arquivo): string
     {
-        $nome = basename($arquivo);
-        return substr($nome, 0, strrpos($nome, '.'));
+        return null;
     }
 
     /**
