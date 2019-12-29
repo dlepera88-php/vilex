@@ -81,11 +81,7 @@ abstract class AbstractTemplate
      */
     private function extrairConteudoArquivo(): self
     {
-        ob_start();
-        include $this->getArquivo();
-        $this->conteudo = ob_get_contents();
-        ob_end_clean();
-
+        $this->conteudo = file_get_contents($this->getArquivo());
         return $this;
     }
 
