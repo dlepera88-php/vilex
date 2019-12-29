@@ -227,7 +227,7 @@ class VileX
     {
         $pagina_mestra = "{$this->configuracao->getRoot()}{$this->pagina_mestra}";
 
-        if (preg_match('~.[a-z0-9]{2,4}$~', $pagina_mestra) === 0) {
+        if (preg_match('~\.[a-z0-9]{2,4}$~', $pagina_mestra) === 0) {
             $pagina_mestra .= ".{$this->configuracao->getExtensaoTemplate()}";
         }
 
