@@ -62,6 +62,9 @@ class VileX
     /** @var CaminhoCompletoRecurso */
     private $caminho_completo_recurso;
 
+    /**
+     * VileX constructor.
+     */
     public function __construct()
     {
         $this->caminho_completo_recurso = new CaminhoCompletoRecurso();
@@ -85,7 +88,7 @@ class VileX
 
         $include_path = get_include_path();
 
-        if (strpos($include_path, $this->view_root) === -1) {
+        if (strpos($include_path, $this->view_root) === false) {
             set_include_path($this->view_root . PATH_SEPARATOR . $include_path);
         }
 
