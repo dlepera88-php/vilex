@@ -36,9 +36,9 @@ class Template extends AbstractTemplate
     {
         ob_start();
         include $this->getArquivo();
-        $template_renderizado = ob_get_contents();
+        $conteudo_template = ob_get_contents();
         ob_end_clean();
 
-        return $template_renderizado;
+        return $this->renderiza_contexto_html->execute($conteudo_template, $this->getContexto());
     }
 }

@@ -88,9 +88,9 @@ class PaginaMestra extends AbstractTemplate
     {
         ob_start();
         include $this->getArquivo();
-        $pagina_mestra_renderizada = ob_get_contents();
+        $conteudo_pagina_mestra = ob_get_contents();
         ob_end_clean();
 
-        return $pagina_mestra_renderizada;
+        return $this->renderiza_contexto_html->execute($conteudo_pagina_mestra, $this->getContexto());
     }
 }

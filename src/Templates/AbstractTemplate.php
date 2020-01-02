@@ -27,6 +27,7 @@ namespace Vilex\Templates;
 
 
 use Vilex\Exceptions\TemplateInvalidoException;
+use Vilex\Services\RenderizaContexto2Html;
 
 abstract class AbstractTemplate
 {
@@ -36,6 +37,8 @@ abstract class AbstractTemplate
     private $contexto = [];
     /** @var string */
     private $conteudo;
+    /** @var RenderizaContexto2Html */
+    protected $renderiza_contexto_html;
 
     /**
      * AbstractTemplate constructor.
