@@ -50,6 +50,7 @@ abstract class AbstractTemplate
     {
         $this->arquivo = $arquivo;
         $this->contexto = $contexto;
+        $this->renderiza_contexto_html = new RenderizaContexto2Html();
         $this->existsArquivo(true);
         $this->extrairConteudoArquivo();
     }
