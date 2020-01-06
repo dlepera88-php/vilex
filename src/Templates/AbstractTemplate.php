@@ -85,7 +85,8 @@ abstract class AbstractTemplate
      */
     private function extrairConteudoArquivo(): self
     {
-        $this->conteudo = file_get_contents($this->getArquivo());
+        $arquivo = stream_resolve_include_path($this->getArquivo());
+        $this->conteudo = file_get_contents($arquivo);
         return $this;
     }
 
@@ -96,13 +97,13 @@ abstract class AbstractTemplate
      */
     public function existsArquivo(bool $throw = false): bool
     {
-        $exists_pagina_mestra = stream_resolve_include_path($this->getArquivo()) !== false;
+        $exists_arquivo = stream_resolve_include_path($this->getArquivo()) !== false;
 
-        if ($throw && !$exists_pagina_mestra) {
+        if ($throw && !$exists_arquivo) {
             throw TemplateInvalidoException::naoEncontrado($this->getArquivo());
         }
 
-        return $exists_pagina_mestra;
+        return $exists_arquivo;
     }
 
     /**
