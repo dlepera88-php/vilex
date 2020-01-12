@@ -260,10 +260,26 @@ class VileX
      * @param string|null $versao
      * @param string|null $type Tipo de script a ser gerado. Ex: module, javascript
      * @return VileX
+     * @deprecated O parâmetro $absoluto não é mais utilizado.
+     * @see adicionarJS
      */
     public function addArquivoJS(string $arquivo_js, bool $absoluto = false, ?string $versao = null, ?string $type = null): VileX
     {
         $arquivo_js = $this->caminho_completo_recurso->execute($arquivo_js, $this->getBaseHtml());
+        $this->arquivos_js[] = new Javascript($arquivo_js, $versao, $type);
+        return $this;
+    }
+
+    /**
+     * Adicionar um arquivo JS
+     * @param string $arquivo_js
+     * @param string|null $versao
+     * @param string|null $type
+     * @return VileX
+     */
+    public function adicionarJS(string $arquivo_js, ?string $versao = null, ?string $type = null): VileX
+    {
+        $arquivo_js = $this->caminho_completo_recurso->execute($arquivo_js, $this->configuracao->getBaseHtml());
         $this->arquivos_js[] = new Javascript($arquivo_js, $versao, $type);
         return $this;
     }
@@ -306,10 +322,26 @@ class VileX
      * @param string|null $versao
      * @param string $media
      * @return VileX
+     * @deprecated O parâmetro $absoluto não é mais utilizado.
+     * @see adicionarCss
      */
     public function addArquivoCss(string $arquivo_css, bool $absoluto = false, ?string $versao = null, string $media = 'all'): VileX
     {
         $arquivo_css = $this->caminho_completo_recurso->execute($arquivo_css, $this->getBaseHtml());
+        $this->arquivos_css[] = new Stylesheet($arquivo_css, $versao, $media);
+        return $this;
+    }
+
+    /**
+     * Adicionar um arquivo CSS
+     * @param string $arquivo_css
+     * @param string|null $versao
+     * @param string $media
+     * @return VileX
+     */
+    public function adicionarCss(string $arquivo_css, ?string $versao = null, string $media = 'all'): VileX
+    {
+        $arquivo_css = $this->caminho_completo_recurso->execute($arquivo_css, $this->configuracao->getBaseHtml());
         $this->arquivos_css[] = new Stylesheet($arquivo_css, $versao, $media);
         return $this;
     }
