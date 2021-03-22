@@ -33,7 +33,7 @@ use Vilex\Services\CaminhoCompletoRecurso;
 use Vilex\Services\MergePaginaMestraComConteudo;
 use Vilex\Templates\PaginaMestra;
 use Vilex\Templates\Template;
-use Zend\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 /**
  * Class VileX
@@ -205,7 +205,7 @@ class VileX
      * @return string
      * @deprecated
      */
-    public function getContextoByTemplate(string $arquivo): string
+    public function getContextoByTemplate(string $arquivo): ?string
     {
         return null;
     }

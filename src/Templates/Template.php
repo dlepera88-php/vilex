@@ -25,7 +25,11 @@
 
 namespace Vilex\Templates;
 
-
+/**
+ * Class Template
+ * @package Vilex\Templates
+ * @covers TemplateTest
+ */
 class Template extends AbstractTemplate
 {
 

@@ -1,6 +1,7 @@
 {
     "name": "dlepera88-php/vilex",
-    "version": "2.0.2",
+    "description": "Redenrizador de views.",
+    "version": "2.1.0",
     "license": "MIT",
     "authors": [
         {
@@ -10,14 +11,14 @@
     ],
     "require": {
         "php": ">=7.1",
-        "zendframework/zend-diactoros": "2.0"
+        "laminas/laminas-diactoros": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.5"
     },
     "suggest": {
         "dlepera88-php/dlx": "Micro-framework que utiliza a arquitetura Hexagonal (em desenvolvimento)",
-        "dlepera88-php/painel-dlx": "Painel de administração"
+        "painel-dlx/painel-dlx": "Painel de administração"
     },
     "autoload": {
         "psr-4": {

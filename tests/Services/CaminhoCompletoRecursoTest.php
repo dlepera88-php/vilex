@@ -26,14 +26,14 @@
 namespace Vilex\Tests\Services;
 
 use Vilex\Services\CaminhoCompletoRecurso;
-use PHPUnit\Framework\TestCase;
+use Vilex\Tests\TestCase\VileXTestCase;
 
 /**
  * Class CaminhoCompletoRecursoTest
  * @package Vilex\Tests\Services
  * @coversDefaultClass \Vilex\Services\CaminhoCompletoRecurso
  */
-class CaminhoCompletoRecursoTest extends TestCase
+class CaminhoCompletoRecursoTest extends VileXTestCase
 {
     /**
      * @covers ::execute

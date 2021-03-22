@@ -22,8 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-?>
 
-[CONTEUDO]
-<h1>Olá mundo!</h1>
-[/CONTEUDO]
+namespace Vilex\Tests\TestCase;
+
+
+use PHPUnit\Framework\TestCase;
+
+class VileXTestCase extends TestCase
+{
+    /**
+     * @inheritDoc
+     */
+    protected function setUp()
+    {
+        $this->atualizarIncludedPaths();
+        parent::setUp();
+    }
+
+    protected function atualizarIncludedPaths(): void
+    {
+        $diretorio_atual = getcwd();
+        $include_path = get_include_path();
+
+        if (strpos($include_path, $diretorio_atual) === false) {
+            $include_path .= PATH_SEPARATOR . $diretorio_atual;
+            set_include_path($include_path);
+        }
+    }
+}

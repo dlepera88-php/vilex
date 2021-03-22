@@ -26,20 +26,20 @@
 namespace Vilex\Tests\Templates;
 
 
-use PHPUnit\Framework\TestCase;
 use Vilex\Exceptions\PaginaMestraInvalidaException;
 use Vilex\Exceptions\TemplateInvalidoException;
 use Vilex\Templates\PaginaMestra;
+use Vilex\Tests\TestCase\VileXTestCase;
 
 /**
  * Class PaginaMestraTest
  * @package Vilex\Tests\Templates
  * @coversDefaultClass \Vilex\Templates\PaginaMestra
  */
-class PaginaMestraTest extends TestCase
+class PaginaMestraTest extends VileXTestCase
 {
     const PAGINA_MESTRA_NAO_EXISTE = 'pagina_mestra_nao_existe.phtml';
-    const PAGINA_MESTRA_EXEMPLO = 'arquivos/pagina_mestra.phtml';
+    const PAGINA_MESTRA_EXEMPLO = '../../exemplos/pagina_mestra.phtml';
 
     /**
      * @covers ::__construct
@@ -53,7 +53,6 @@ class PaginaMestraTest extends TestCase
 
     /**
      * @covers ::existsArquivo
-     * @throws PaginaMestraInvalidaException
      * @throws TemplateInvalidoException
      */
     public function test_existsArquivo_com_pagina_mestra_exemplo()
@@ -63,9 +62,7 @@ class PaginaMestraTest extends TestCase
     }
 
     /**
-     * @throws PaginaMestraInvalidaException
      * @covers ::getConteudo
-     * @covers ::extrairConteudoArquivo
      */
     public function test_getConteudo_deve_retornar_conteudo_puro_da_pagina_mestra(): void
     {
@@ -75,7 +72,6 @@ class PaginaMestraTest extends TestCase
     }
 
     /**
-     * @throws PaginaMestraInvalidaException
      * @covers ::identificarAreasLayout
      */
     public function test_indentificaAreasLayout_com_pagina_mestra_valida(): void
