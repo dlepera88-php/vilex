@@ -23,57 +23,60 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Tests;
+namespace Vilex\Tests\Templates;
 
 
-use PHPUnit\Framework\TestCase;
-use Vilex\Exceptions\PaginaMestraNaoEncontradaException;
-use Vilex\PaginaMestra;
+use Vilex\Exceptions\PaginaMestraInvalidaException;
+use Vilex\Exceptions\TemplateInvalidoException;
+use Vilex\Templates\PaginaMestra;
+use Vilex\Tests\TestCase\VileXTestCase;
 
-class PaginaMestraTest extends TestCase
+/**
+ * Class PaginaMestraTest
+ * @package Vilex\Tests\Templates
+ * @coversDefaultClass \Vilex\Templates\PaginaMestra
+ */
+class PaginaMestraTest extends VileXTestCase
 {
     const PAGINA_MESTRA_NAO_EXISTE = 'pagina_mestra_nao_existe.phtml';
-    const PAGINA_MESTRA_EXEMPLO = '../exemplos/pagina_mestra.phtml';
+    const PAGINA_MESTRA_EXEMPLO = '../../exemplos/pagina_mestra.phtml';
 
     /**
-     * @throws PaginaMestraNaoEncontradaException
+     * @covers ::__construct
      */
     public function test_existsPaginaMestra_com_pagina_mestra_invalida(): void
     {
-        $this->expectException(PaginaMestraNaoEncontradaException::class);
+        $this->expectException(PaginaMestraInvalidaException::class);
+        $this->expectExceptionCode(10);
         new PaginaMestra(self::PAGINA_MESTRA_NAO_EXISTE);
     }
 
     /**
-     * @throws PaginaMestraNaoEncontradaException
+     * @covers ::existsArquivo
+     * @throws TemplateInvalidoException
      */
-    public function test_existsPaginaMestra_com_pagina_mestra_exemplo()
+    public function test_existsArquivo_com_pagina_mestra_exemplo()
     {
         $pagina_mestra = new PaginaMestra(self::PAGINA_MESTRA_EXEMPLO);
-        $this->assertTrue($pagina_mestra->existsPaginaMestra());
+        $this->assertTrue($pagina_mestra->existsArquivo());
     }
 
     /**
-     * @throws PaginaMestraNaoEncontradaException
+     * @covers ::getConteudo
      */
-    public function test_getConteudo_pagina_mestra(): void
+    public function test_getConteudo_deve_retornar_conteudo_puro_da_pagina_mestra(): void
     {
         $pagina_mestra = new PaginaMestra(self::PAGINA_MESTRA_EXEMPLO);
         $conteudo = $pagina_mestra->getConteudo();
         $this->assertContains($conteudo, file_get_contents(self::PAGINA_MESTRA_EXEMPLO));
-
-        $pagina_mestra->setPaginaMestra(self::PAGINA_MESTRA_NAO_EXISTE);
-        $this->expectException(PaginaMestraNaoEncontradaException::class);
-        $pagina_mestra->getConteudo();
     }
 
     /**
-     * @throws PaginaMestraNaoEncontradaException
+     * @covers ::identificarAreasLayout
      */
     public function test_indentificaAreasLayout_com_pagina_mestra_valida(): void
     {
         $pagina_mestra = new PaginaMestra(self::PAGINA_MESTRA_EXEMPLO);
-        $pagina_mestra->identificarAreasLayout();
         $areas_layout = $pagina_mestra->getAreasLayout();
 
         $this->assertCount(4, $areas_layout);

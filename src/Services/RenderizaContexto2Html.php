@@ -23,13 +23,36 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Exceptions;
+namespace Vilex\Services;
 
-
-class ViewNaoEncontradaException extends \Exception
+/**
+ * Class RenderizarContexto2Html
+ * @package Vilex\Services
+ * @experimental Esse é um recurso experimental que ainda não é certeza de ser mantido
+ * @covers RenderizaContexto2HtmlTest
+ */
+class RenderizaContexto2Html
 {
-    public function __construct(string $view)
+    /**
+     * @param string $html_original
+     * @param array $contexto
+     * @return string
+     */
+    public function execute(string $html_original, array $contexto): string
     {
-        parent::__construct("View {$view} não encontrada!", 404);
+        $html_renderizado = $html_original;
+
+        preg_match_all('~{{ ([\w\d-]+) }}~', $html_original, $contextos_presentes);
+        $nomes_contextos = array_combine($contextos_presentes[0], $contextos_presentes[1]);
+
+        foreach ($nomes_contextos as $contexto_html => $nome) {
+            if (!array_key_exists($nome, $contexto)) {
+                continue;
+            }
+
+            $html_renderizado = str_replace($contexto_html, $contexto[$nome], $html_renderizado);
+        }
+
+        return $html_renderizado;
     }
 }

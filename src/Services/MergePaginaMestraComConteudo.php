@@ -23,8 +23,9 @@
  * SOFTWARE.
  */
 
-namespace Vilex;
+namespace Vilex\Services;
 
+use Vilex\Templates\PaginaMestra;
 
 class MergePaginaMestraComConteudo
 {
@@ -57,11 +58,10 @@ class MergePaginaMestraComConteudo
      * Acoplar o conteúdo informado dentro da página mestra.
      * @param string $conteudo
      * @return string
-     * @throws Exceptions\PaginaMestraNaoEncontradaException
      */
     public function merge(string $conteudo): string
     {
-        $html = $this->pagina_mestra->getConteudo();
+        $html = $this->pagina_mestra->render();
         $conteudo_extraido = $this->extrairAreasLayoutConteudo($conteudo);
 
         foreach ($this->pagina_mestra->getAreasLayout() as $area_layout) {

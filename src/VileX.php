@@ -25,43 +25,85 @@
 
 namespace Vilex;
 
+use Vilex\Exceptions\PaginaMestraInvalidaException;
+use Vilex\Exceptions\TemplateInvalidoException;
+use Vilex\Recursos\Javascript;
+use Vilex\Recursos\Stylesheet;
+use Vilex\Services\CaminhoCompletoRecurso;
+use Vilex\Services\MergePaginaMestraComConteudo;
+use Vilex\Templates\PaginaMestra;
+use Vilex\Templates\Template;
+use Laminas\Diactoros\Response\HtmlResponse;
 
-use Vilex\Exceptions\ContextoInvalidoException;
-use Vilex\Exceptions\ViewNaoEncontradaException;
-use Zend\Diactoros\Response\HtmlResponse;
-
+/**
+ * Class VileX
+ * @package Vilex
+ * @covers VilexTest
+ */
 class VileX
 {
-    /** @var string */
-    private $view_root = './';
-    /** @var array */
-    private $templates = [];
-    /** @var array */
-    private $atributos = [];
-    /** @var string */
-    private $contexto_atual;
+    /** @var VileXConfiguracao */
+    private $configuracao;
     /** @var string|null */
     private $pagina_mestra;
+    /** @var array */
+    private $templates = [];
     /** @var array */
     private $arquivos_js = [];
     /** @var array */
     private $arquivos_css = [];
+    /** @var array */
+    private $atributos = [];
+    /** @var CaminhoCompletoRecurso */
+    private $caminho_completo_recurso;
+
+    /**
+     * VileX constructor.
+     * @param VileXConfiguracao|null $configuracao
+     */
+    public function __construct(?VileXConfiguracao $configuracao = null)
+    {
+        $this->configuracao = $configuracao ?? new VileXConfiguracao();
+        $this->caminho_completo_recurso = new CaminhoCompletoRecurso();
+    }
 
     /**
      * @return string
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
      */
     public function getViewRoot(): string
     {
-        return $this->view_root;
+        return $this->configuracao->getRoot();
     }
 
     /**
      * @param string $view_root
      * @return VileX
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
      */
     public function setViewRoot(string $view_root): VileX
     {
-        $this->view_root = trim($view_root, '/') . '/';
+        $this->configuracao->setRoot($view_root);
+        return $this;
+    }
+
+    /**
+     * @return string
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
+     */
+    public function getBaseHtml(): string
+    {
+        return $this->configuracao->getBaseHtml();
+    }
+
+    /**
+     * @param string|null $base_html
+     * @return VileX
+     * @deprecated Utilize a classe VileXConfiguracao através do constructor
+     */
+    public function setBaseHtml(?string $base_html): VileX
+    {
+        $this->configuracao->setBaseHtml($base_html);
         return $this;
     }
 
@@ -77,16 +119,12 @@ class VileX
      * @param string $arquivo
      * @param array $atributos
      * @return VileX
-     * @throws ViewNaoEncontradaException
+     * @throws TemplateInvalidoException
      */
     public function addTemplate(string $arquivo, array $atributos = []): VileX
     {
-        $template = new Template("{$this->view_root}{$arquivo}");
-
-        foreach ($atributos as $nome => $valor) {
-            $template->setAtributo($nome, $valor);
-        }
-
+        $nome_arquivo_completo = "{$this->configuracao->getRoot()}{$arquivo}.{$this->configuracao->getExtensaoTemplate()}";
+        $template = new Template($nome_arquivo_completo, $atributos);
         $this->templates[$arquivo] = $template;
         return $this;
     }
@@ -95,6 +133,7 @@ class VileX
      * Excluir um template
      * @param string $template
      * @return VileX
+     * @deprecated
      */
     public function excluirTemplate(string $template): VileX
     {
@@ -108,46 +147,10 @@ class VileX
      * @param $valor
      * @param null|string $contexto
      * @return VileX
-     * @throws ContextoInvalidoException
      */
     public function setAtributo(string $nome, $valor, ?string $contexto = null): Vilex
     {
-        if (is_null($contexto)) {
-            $this->atributos[$nome] = $valor;
-        } else {
-            if (!array_key_exists($contexto, $this->templates)) {
-                throw new ContextoInvalidoException($contexto, 'contexto não encontrado');
-            }
-
-            /** @var Template $template */
-            $template = $this->templates[$contexto];
-            $template->setAtributo($nome, $valor);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Excluir um parâmetro.
-     * @param string $nome
-     * @param null|string $contexto
-     * @return VileX
-     * @throws ContextoInvalidoException
-     */
-    public function unsetAtributo(string $nome, ?string $contexto = null): VileX
-    {
-        if (is_null($contexto)) {
-            unset($this->atributos[$nome]);
-        } else {
-            if (!array_key_exists($contexto, $this->templates)) {
-                throw new ContextoInvalidoException($contexto, 'contexto não encontrado');
-            }
-
-            /** @var Template $template */
-            $template = $this->templates[$contexto];
-            $template->unsetAtributo($nome);
-        }
-
+        $this->atributos[$nome] = $valor;
         return $this;
     }
 
@@ -155,6 +158,7 @@ class VileX
      * Obter o valor de um determinado parâmetro
      * @param string $nome
      * @return null
+     * @deprecated Essa responsabilidade será passada para o Template/Página Mestra
      */
     public function getAtributo(string $nome)
     {
@@ -169,35 +173,29 @@ class VileX
      * Filtrar todos os atributos para retornar apenas os atributos acessíveis em um determinado
      * contexto.
      * @return array|null
+     * @deprecated
      */
     private function getAtributosAcessiveis(): ?array
     {
-        $atributos_acessiveis = $this->atributos;
-
-        if (array_key_exists($this->contexto_atual, $this->templates)) {
-            /** @var Template $template */
-            $template = $this->templates[$this->contexto_atual];
-            $atributos_acessiveis = array_merge($atributos_acessiveis, $template->getAtributos());
-        }
-
-        return $atributos_acessiveis;
+        return null;
     }
 
     /**
      * @return string
+     * @deprecated
      */
-    public function getContextoAtual(): string
+    public function getContextoAtual(): ?string
     {
-        return $this->contexto_atual;
+        return null;
     }
 
     /**
      * @param string $contexto_atual
      * @return VileX
+     * @deprecated
      */
     public function setContextoAtual(string $contexto_atual): VileX
     {
-        $this->contexto_atual = $contexto_atual;
         return $this;
     }
 
@@ -205,16 +203,17 @@ class VileX
      * Identificar o contexto de um template expecífico
      * @param string $arquivo
      * @return string
+     * @deprecated
      */
-    public function getContextoByTemplate(string $arquivo): string
+    public function getContextoByTemplate(string $arquivo): ?string
     {
-        $nome = basename($arquivo);
-        return substr($nome, 0, strrpos($nome, '.'));
+        return null;
     }
 
     /**
      * Setar o contexto atual de acordo com o nome de um template
      * @param string $arquivo
+     * @deprecated
      */
     public function setContextoByTemplate(string $arquivo)
     {
@@ -226,7 +225,13 @@ class VileX
      */
     public function getPaginaMestra(): ?string
     {
-        return $this->pagina_mestra;
+        $pagina_mestra = "{$this->configuracao->getRoot()}{$this->pagina_mestra}";
+
+        if (preg_match('~\.[a-z0-9]{2,4}$~', $pagina_mestra) === 0) {
+            $pagina_mestra .= ".{$this->configuracao->getExtensaoTemplate()}";
+        }
+
+        return $pagina_mestra;
     }
 
     /**
@@ -251,23 +256,31 @@ class VileX
     /**
      * Adicionar um arquivo JS
      * @param string $arquivo_js
-     * @param bool $absoluto
+     * @param bool $absoluto @deprecated
      * @param string|null $versao
+     * @param string|null $type Tipo de script a ser gerado. Ex: module, javascript
+     * @return VileX
+     * @deprecated O parâmetro $absoluto não é mais utilizado.
+     * @see adicionarJS
+     */
+    public function addArquivoJS(string $arquivo_js, bool $absoluto = false, ?string $versao = null, ?string $type = null): VileX
+    {
+        $arquivo_js = $this->caminho_completo_recurso->execute($arquivo_js, $this->getBaseHtml());
+        $this->arquivos_js[] = new Javascript($arquivo_js, $versao, $type);
+        return $this;
+    }
+
+    /**
+     * Adicionar um arquivo JS
+     * @param string $arquivo_js
+     * @param string|null $versao
+     * @param string|null $type
      * @return VileX
      */
-    public function addArquivoJS(string $arquivo_js, bool $absoluto = false, ?string $versao = null): VileX
+    public function adicionarJS(string $arquivo_js, ?string $versao = null, ?string $type = null): VileX
     {
-        $arquivo_js = $this->findCaminhoCompleto($arquivo_js);
-
-        if ($absoluto && !preg_match('~^/~', $arquivo_js)) {
-            $arquivo_js = "/{$arquivo_js}";
-        }
-
-        if (!is_null($versao)) {
-            $arquivo_js = "{$arquivo_js}?{$versao}";
-        }
-
-        $this->arquivos_js[] = $arquivo_js;
+        $arquivo_js = $this->caminho_completo_recurso->execute($arquivo_js, $this->configuracao->getBaseHtml());
+        $this->arquivos_js[] = new Javascript($arquivo_js, $versao, $type);
         return $this;
     }
 
@@ -281,7 +294,12 @@ class VileX
 
         if (count($this->getArquivosJs()) > 0) {
             $html .= "[ARQUIVOS-JAVASCRIPT]\n";
-            $html .= "\t<script src=\"" . implode("\"></script>\n\t<script src=\"", $this->getArquivosJs()) . '"></script>';
+
+            /** @var Javascript $javascript */
+            foreach ($this->getArquivosJs() as $javascript) {
+                $html .= $javascript->getTagHtml();
+            }
+
             $html .= "\n[/ARQUIVOS-JAVASCRIPT]";
         }
 
@@ -300,23 +318,31 @@ class VileX
     /**
      * Adicionar um arquivo CSS
      * @param string $arquivo_css
-     * @param bool $absoluto
+     * @param bool $absoluto @deprecated
      * @param string|null $versao
+     * @param string $media
+     * @return VileX
+     * @deprecated O parâmetro $absoluto não é mais utilizado.
+     * @see adicionarCss
+     */
+    public function addArquivoCss(string $arquivo_css, bool $absoluto = false, ?string $versao = null, string $media = 'all'): VileX
+    {
+        $arquivo_css = $this->caminho_completo_recurso->execute($arquivo_css, $this->getBaseHtml());
+        $this->arquivos_css[] = new Stylesheet($arquivo_css, $versao, $media);
+        return $this;
+    }
+
+    /**
+     * Adicionar um arquivo CSS
+     * @param string $arquivo_css
+     * @param string|null $versao
+     * @param string $media
      * @return VileX
      */
-    public function addArquivoCss(string $arquivo_css, bool $absoluto = false, ?string $versao = null): VileX
+    public function adicionarCss(string $arquivo_css, ?string $versao = null, string $media = 'all'): VileX
     {
-        $arquivo_css = $this->findCaminhoCompleto($arquivo_css);
-
-        if ($absoluto && !preg_match('~^/~', $arquivo_css)) {
-            $arquivo_css = "/{$arquivo_css}";
-        }
-
-        if (!is_null($versao)) {
-            $arquivo_css = "{$arquivo_css}?{$versao}";
-        }
-
-        $this->arquivos_css[] = $arquivo_css;
+        $arquivo_css = $this->caminho_completo_recurso->execute($arquivo_css, $this->configuracao->getBaseHtml());
+        $this->arquivos_css[] = new Stylesheet($arquivo_css, $versao, $media);
         return $this;
     }
 
@@ -330,7 +356,12 @@ class VileX
 
         if (count($this->getArquivosCss()) > 0) {
             $html .= "[ARQUIVOS-CSS]\n";
-            $html .= "\t<link rel=\"stylesheet\" href=\"" . implode("\">\n\t<link rel=\"stylesheet\" href=\"", $this->getArquivosCss()) . '">';
+
+            /** @var Stylesheet $stylesheet */
+            foreach ($this->arquivos_css as $stylesheet) {
+                $html .= $stylesheet->getTagHtml();
+            }
+
             $html .= "\n[/ARQUIVOS-CSS]";
         }
 
@@ -341,7 +372,7 @@ class VileX
      * Renderizar o conteúdo HTML
      * @param string|null $arquivo_pagina_mestra
      * @return HtmlResponse
-     * @throws Exceptions\PaginaMestraNaoEncontradaException
+     * @throws PaginaMestraInvalidaException
      */
     public function render(?string $arquivo_pagina_mestra = null): HtmlResponse
     {
@@ -349,44 +380,19 @@ class VileX
         $html .= $this->getTagsCss();
         $html .= $this->getTagsJs();
 
-
-        ob_start();
         /** @var Template $template */
         foreach ($this->templates as $template) {
-            $this->setContextoByTemplate($template->getArquivo());
-            include $template->getArquivo();
-            // $template->render();
+            $template->addContextoGlobal($this->atributos);
+            $html .= $template->render();
         }
-
-        $html .= ob_get_contents();
-        ob_end_clean();
 
         $arquivo_pagina_mestra = $arquivo_pagina_mestra ?? $this->getPaginaMestra();
         if (!empty($arquivo_pagina_mestra)) {
             $pagina_mestra = new PaginaMestra($arquivo_pagina_mestra);
+            $pagina_mestra->addContextoGlobal($this->atributos);
             $html = (new MergePaginaMestraComConteudo($pagina_mestra))->merge($html);
         }
 
         return new HtmlResponse($html);
-    }
-
-    /**
-     * @param string $arquivo
-     * @return string
-     */
-    private function findCaminhoCompleto(string $arquivo): string
-    {
-        $arquivo_original = trim($arquivo, '/');
-        $include_paths = explode(PATH_SEPARATOR, get_include_path());
-        $quantidade_paths = count($include_paths);
-        $i = 0;
-
-        while (!file_exists($arquivo) && $i < $quantidade_paths) {
-            $path = preg_replace('~/$~',  '', $include_paths[$i]);
-            $arquivo = "{$path}/{$arquivo_original}";
-            $i++;
-        }
-
-        return $arquivo;
     }
 }

@@ -23,13 +23,30 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Exceptions;
+namespace Vilex\Tests\TestCase;
 
 
-class PaginaMestraNaoEncontradaException extends \Exception
+use PHPUnit\Framework\TestCase;
+
+class VileXTestCase extends TestCase
 {
-    public function __construct(string $pagina_mestra)
+    /**
+     * @inheritDoc
+     */
+    protected function setUp()
     {
-        parent::__construct("Página mestra {$pagina_mestra} não encontrada.", 404);
+        $this->atualizarIncludedPaths();
+        parent::setUp();
+    }
+
+    protected function atualizarIncludedPaths(): void
+    {
+        $diretorio_atual = getcwd();
+        $include_path = get_include_path();
+
+        if (strpos($include_path, $diretorio_atual) === false) {
+            $include_path .= PATH_SEPARATOR . $diretorio_atual;
+            set_include_path($include_path);
+        }
     }
 }

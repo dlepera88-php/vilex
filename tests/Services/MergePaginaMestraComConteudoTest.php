@@ -23,11 +23,12 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Tests;
+namespace Vilex\Tests\Services;
 
-use Vilex\MergePaginaMestraComConteudo;
+use Vilex\Services\MergePaginaMestraComConteudo;
 use PHPUnit\Framework\TestCase;
-use Vilex\PaginaMestra;
+use Vilex\Templates\PaginaMestra;
+use Vilex\Tests\Templates\PaginaMestraTest;
 
 class MergePaginaMestraComConteudoTest extends TestCase
 {
@@ -100,7 +101,7 @@ class MergePaginaMestraComConteudoTest extends TestCase
     }
 
     /**
-     * @throws \Vilex\Exceptions\PaginaMestraNaoEncontradaException
+     * @param string $conteudo
      * @dataProvider providerConteudos
      */
     public function test_extrairAreasLayoutConteudo_com_pagina_mestra_exemplo(string $conteudo)

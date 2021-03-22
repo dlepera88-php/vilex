@@ -1,0 +1,62 @@
+<?php
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 PHP DLX
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+namespace Vilex\Tests\Services;
+
+use Vilex\Services\CaminhoCompletoRecurso;
+use Vilex\Tests\TestCase\VileXTestCase;
+
+/**
+ * Class CaminhoCompletoRecursoTest
+ * @package Vilex\Tests\Services
+ * @coversDefaultClass \Vilex\Services\CaminhoCompletoRecurso
+ */
+class CaminhoCompletoRecursoTest extends VileXTestCase
+{
+    /**
+     * @covers ::execute
+     */
+    public function test_Execute_deve_resolver_nomes_de_arquivos_pelo_include_path()
+    {
+        $arquivo = basename(__FILE__);
+        $base = __DIR__;
+        $caminho_relativo_recurso = new CaminhoCompletoRecurso();
+        $caminho_relativo = $caminho_relativo_recurso->execute($arquivo, $base);
+
+        $this->assertEquals("/{$arquivo}", $caminho_relativo);
+    }
+
+    /**
+     * @covers ::execute
+     */
+    public function test_Execute_deve_retornar_o_proprio_arquivo_quando_nao_encontrar_no_path()
+    {
+        $arquivo = 'qualquer_arquivo.js';
+        $caminho_relativo_recurso = new CaminhoCompletoRecurso();
+        $caminho_relativo = $caminho_relativo_recurso->execute($arquivo);
+
+        $this->assertEquals($arquivo, $caminho_relativo);
+    }
+}

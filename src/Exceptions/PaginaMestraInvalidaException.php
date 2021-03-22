@@ -25,18 +25,16 @@
 
 namespace Vilex\Exceptions;
 
+use Exception;
 
-use Throwable;
-
-class ContextoInvalidoException extends \Exception
+class PaginaMestraInvalidaException extends Exception
 {
     /**
-     * ContextoInvalidoException constructor.
-     * @param string $contexto
-     * @param string $motivo
+     * @param string $nome_arquivo
+     * @return static
      */
-    public function __construct(string $contexto, string $motivo)
+    public static function naoEncontrada(string $nome_arquivo): self
     {
-        parent::__construct("Contexto {$contexto} inválido! Motivo: {$motivo}.", 500);
+        return new self("Página mestra {$nome_arquivo} não encontrada!", 10);
     }
 }

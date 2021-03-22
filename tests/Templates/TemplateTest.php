@@ -23,14 +23,19 @@
  * SOFTWARE.
  */
 
-namespace Vilex\Tests;
+namespace Vilex\Tests\Templates;
 
 
-use PHPUnit\Framework\TestCase;
-use Vilex\Exceptions\ViewNaoEncontradaException;
-use Vilex\Template;
+use Vilex\Exceptions\TemplateInvalidoException;
+use Vilex\Templates\Template;
+use Vilex\Tests\TestCase\VileXTestCase;
 
-class TemplateTest extends TestCase
+/**
+ * Class TemplateTest
+ * @package Vilex\Tests
+ * @coversDefaultClass \Vilex\Templates\Template
+ */
+class TemplateTest extends VileXTestCase
 {
     public function providerAtributos(): array
     {
@@ -44,58 +49,45 @@ class TemplateTest extends TestCase
     }
 
     /**
-     * @throws ViewNaoEncontradaException
+     * @covers ::__construct
      */
     public function test_instanciar_Template_com_arquivo_que_nao_existe()
     {
-        $this->expectException(ViewNaoEncontradaException::class);
+        $this->expectException(TemplateInvalidoException::class);
         new Template('arquivo/nao/existe');
     }
 
     /**
-     * @throws ViewNaoEncontradaException
+     * @covers ::__construct
      */
     public function test_instanciar_Template_com_arquivo_valido()
     {
-        $template = new Template('../exemplos/template');
-
+        $template = new Template('../../exemplos/template.phtml');
         $this->assertInstanceOf(Template::class, $template);
     }
 
     /**
-     * @param $nome
-     * @param $valor
-     * @throws ViewNaoEncontradaException
+     * @param string $nome
+     * @param mixed $valor
      * @dataProvider providerAtributos
+     * @throws TemplateInvalidoException
+     * @covers ::__construct
      */
-    public function test_get_set_atributos($nome, $valor)
+    public function test__construct_deve_definir_contexto_do_template(string $nome, $valor)
     {
-        $template = new Template('../exemplos/template');
-        $template->setAtributo($nome, $valor);
+        $template = new Template('../../exemplos/template.phtml', [
+            $nome => $valor
+        ]);
 
         $this->assertEquals($valor, $template->getAtributo($nome));
     }
 
     /**
-     * @throws ViewNaoEncontradaException
+     * @covers ::getAtributo
      */
     public function test_getAtributo_nao_existe()
     {
-        $template = new Template('../exemplos/template');
+        $template = new Template('../../exemplos/template.phtml');
         $this->assertNull($template->getAtributo('bla_bla'));
-    }
-
-    /**
-     * @throws ViewNaoEncontradaException
-     */
-    public function test_unsetAtributo()
-    {
-        $template = new Template('../exemplos/template');
-
-        $template->setAtributo('teste', 'teste');
-        $this->assertEquals('teste', $template->getAtributo('teste'));
-
-        $template->unsetAtributo('teste');
-        $this->assertNull($template->getAtributo('teste'));
     }
 }
